@@ -1,0 +1,75 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Car {
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  id          String    @id @default(cuid())
+  make        String?
+  model       String?
+  pricePerDay Float?
+  reviews     Review[]
+  updatedAt   DateTime  @updatedAt
+  year        Int?
+}
+
+model Booking {
+  car        Car?      @relation(fields: [carId], references: [id])
+  carId      String?
+  createdAt  DateTime  @default(now())
+  endDate    DateTime?
+  id         String    @id @default(cuid())
+  startDate  DateTime?
+  totalPrice Float?
+  updatedAt  DateTime  @updatedAt
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model Cart {
+  createdAt DateTime        @default(now())
+  id        String          @id @default(cuid())
+  status    EnumCartStatus?
+  updatedAt DateTime        @updatedAt
+  user      User?           @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Review {
+  car        Car?     @relation(fields: [carId], references: [id])
+  carId      String?
+  createdAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  rating     Int?
+  reviewText String?
+  updatedAt  DateTime @updatedAt
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model User {
+  address     String?
+  bookings    Booking[]
+  carts       Cart[]
+  createdAt   DateTime  @default(now())
+  email       String?   @unique
+  firstName   String?
+  id          String    @id @default(cuid())
+  lastName    String?
+  password    String
+  phoneNumber String?
+  reviews     Review[]
+  roles       Json
+  updatedAt   DateTime  @updatedAt
+  username    String    @unique
+}
+
+enum EnumCartStatus {
+  Option1
+}
